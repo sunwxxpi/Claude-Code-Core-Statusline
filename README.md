@@ -54,7 +54,7 @@ sudo pacman -S jq curl
 ## Quick Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Claude-Code-Core-Statusline.git
+git clone https://github.com/sunwxxpi/Claude-Code-Core-Statusline.git
 cd Claude-Code-Core-Statusline
 bash install.sh
 ```
