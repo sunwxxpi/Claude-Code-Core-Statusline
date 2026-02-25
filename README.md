@@ -2,7 +2,9 @@
 
 A rich, informative status line for [Claude Code](https://code.claude.com/docs/en/overview) that shows model info, context usage, session cost, and your Anthropic plan utilization — all in 3 compact lines.
 
-![Statusline Preview](assets/preview.png)
+<p align="center">
+  <img src="assets/statusline-preview.png" alt="Statusline Preview" width="700">
+</p>
 
 ---
 
@@ -14,7 +16,7 @@ A rich, informative status line for [Claude Code](https://code.claude.com/docs/e
 | `🤖 model` | Active model name |
 | `📁 dir \| branch` | Current directory and git branch (if in a repo) |
 | `⚙️ mode` | Output style (default / auto, etc.) |
-| `🧠 Context Used` | Context window usage % with progress bar |
+| `🧠 Context Used` | Context window usage % with progress bar and token count (e.g. `32k / 200k`) |
 | `💰 $x.xx` | Cumulative session cost |
 | `5h xx%` | 5-hour rolling usage against your Anthropic plan limit |
 | `7d xx%` | 7-day rolling usage against your Anthropic plan limit |

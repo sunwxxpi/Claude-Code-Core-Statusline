@@ -7,7 +7,21 @@ MODE=$(echo "$input" | jq -r '.output_style.name // "default"')
 DIR=$(echo "$input" | jq -r '.workspace.current_dir')
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+CTX_MAX=$(echo "$input" | jq -r '.context_window.context_window_size // 0')
+CTX_INPUT=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
+CTX_CACHE_CREATE=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0')
+CTX_CACHE_READ=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
+CTX_USED=$(( CTX_INPUT + CTX_CACHE_CREATE + CTX_CACHE_READ ))
 
+# Format token count as human-readable (e.g. 12345 -> "12k", 200000 -> "200k")
+_fmt_tokens() {
+    local n="$1"
+    if [ "$n" -ge 1000 ]; then
+        echo "$(( n / 1000 ))k"
+    else
+        echo "$n"
+    fi
+}
 
 CYAN='\033[38;5;69m'; GREEN='\033[38;5;71m'; YELLOW='\033[38;5;179m'; RED='\033[31m'; PURPLE='\033[38;5;141m'; RESET='\033[0m'
 
@@ -75,6 +89,8 @@ git rev-parse --git-dir > /dev/null 2>&1 && BRANCH=" | $(git branch --show-curre
 # Line 1: version, model, directory|branch, mode
 printf '%b\n' "📋 v${VERSION}  ${PURPLE}🤖 ${MODEL}${RESET}  ${CYAN}📁 ${DIR##*/}${BRANCH}${RESET}  ⚙️ ${MODE}"
 # Line 2: context window usage bar
-printf '%b\n' "${GREEN}🧠 Context Used: ${PCT}%${RESET} ${BAR_COLOR}${BAR}${RESET}"
+CTX_USED_FMT=$(_fmt_tokens "$CTX_USED")
+CTX_MAX_FMT=$(_fmt_tokens "$CTX_MAX")
+printf '%b\n' "${GREEN}🧠 Context Used: ${PCT}% ${BAR} (${CTX_USED_FMT} / ${CTX_MAX_FMT})${RESET}"
 # Line 3: session cost + plan utilization
 printf '%b\n' "${YELLOW}💰 ${COST_FMT}${RESET}${USAGE_STR}"
