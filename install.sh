@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ─── 색상 ───────────────────────────────────────────────────────────────────
+# ─── Colors ─────────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; RESET='\033[0m'
 info()    { printf "${CYAN}[INFO]${RESET}  %s\n" "$*"; }
 success() { printf "${GREEN}[OK]${RESET}    %s\n" "$*"; }
 warn()    { printf "${YELLOW}[WARN]${RESET}  %s\n" "$*"; }
 error()   { printf "${RED}[ERROR]${RESET} %s\n" "$*" >&2; exit 1; }
 
-# ─── 의존성 확인 ────────────────────────────────────────────────────────────
+# ─── Dependency check ───────────────────────────────────────────────────────
 check_deps() {
     local missing=()
     command -v jq   &>/dev/null || missing+=("jq")
@@ -22,7 +22,7 @@ check_deps() {
     fi
 }
 
-# ─── 메인 설치 ──────────────────────────────────────────────────────────────
+# ─── Main install ───────────────────────────────────────────────────────────
 CLAUDE_DIR="$HOME/.claude"
 SCRIPT_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/statusline-command.sh"
 SCRIPT_DST="$CLAUDE_DIR/statusline-command.sh"
@@ -42,7 +42,7 @@ success "Script installed."
 
 info "Updating $SETTINGS..."
 
-# settings.json 처리: 없으면 생성, 있으면 merge
+# Create settings.json if missing, otherwise merge statusLine into existing file
 if [ ! -f "$SETTINGS" ]; then
     cat > "$SETTINGS" <<EOF
 {
@@ -54,13 +54,13 @@ if [ ! -f "$SETTINGS" ]; then
 EOF
     success "Created $SETTINGS with statusLine config."
 else
-    # 이미 statusLine이 설정돼 있으면 스킵
+    # Skip if statusLine is already configured
     if jq -e '.statusLine' "$SETTINGS" &>/dev/null; then
         warn "statusLine is already configured in $SETTINGS — skipping."
         warn "To update manually, set:"
         warn "  \"statusLine\": { \"type\": \"command\", \"command\": \"bash $SCRIPT_DST\" }"
     else
-        # 백업 후 merge
+        # Back up existing file and merge statusLine into it
         cp "$SETTINGS" "${SETTINGS}.bak"
         info "Backup saved: ${SETTINGS}.bak"
         tmp=$(mktemp)

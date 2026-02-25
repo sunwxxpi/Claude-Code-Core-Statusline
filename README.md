@@ -32,11 +32,17 @@ A rich, informative status line for [Claude Code](https://claude.ai/code) that s
 | Tool | Required | Notes |
 |------|----------|-------|
 | `bash` | Yes | Pre-installed on Linux and macOS |
-| `jq` | Yes | **Must be installed manually** — not bundled by default |
+| `jq` | Yes | Usually needs manual install — may already be present (e.g. bundled with Anaconda) |
 | `curl` | For usage stats only | Pre-installed on most systems; only needed for `5h`/`7d` fields |
 | `git` | No | Pre-installed on most dev environments; only needed for branch display |
 
-In most cases, **only `jq` needs to be installed**:
+Check if `jq` is already available first:
+
+```bash
+jq --version
+```
+
+If not found, install it:
 
 ```bash
 # macOS
@@ -52,6 +58,21 @@ sudo pacman -S jq
 ---
 
 ## Quick Install
+
+### Option 1: curl (no git required)
+
+Downloads only the script file — simplest option.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sunwxxpi/Claude-Code-Core-Statusline/main/statusline-command.sh \
+  -o ~/.claude/statusline-command.sh && chmod +x ~/.claude/statusline-command.sh
+```
+
+Then add the `statusLine` block to `~/.claude/settings.json` manually (see [Manual Install](#manual-install) step 2).
+
+### Option 2: git clone (includes install.sh)
+
+Clones the full repo and runs the automated installer, which also updates `settings.json`.
 
 ```bash
 git clone https://github.com/sunwxxpi/Claude-Code-Core-Statusline.git

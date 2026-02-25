@@ -11,11 +11,11 @@ PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1
 
 CYAN='\033[38;5;69m'; GREEN='\033[38;5;71m'; YELLOW='\033[38;5;179m'; RED='\033[31m'; PURPLE='\033[38;5;141m'; RESET='\033[0m'
 
-# Anthropic OAuth 사용량 퍼센트 (api.anthropic.com/api/oauth/usage 직접 호출)
+# Fetch Anthropic OAuth usage percentage from api.anthropic.com/api/oauth/usage
 _USAGE_CACHE="$HOME/.claude/usage_pct_cache.json"
 _NOW=$(date +%s)
 
-# 매 턴 동기 호출로 최신값 갱신
+# Refresh usage data synchronously on every response
 _tok=$(jq -r '.claudeAiOauth.accessToken // empty' \
     "$HOME/.claude/.credentials.json" 2>/dev/null)
 if [ -n "$_tok" ]; then
@@ -26,7 +26,7 @@ if [ -n "$_tok" ]; then
     mv "${_USAGE_CACHE}.tmp" "$_USAGE_CACHE"
 fi
 
-# 남은 시간 포맷: "5h 9% (4h22m)" 형태
+# Format usage string as e.g. "5h 9% [=--------] (4h22m)"
 _fmt_usage() {
     local label="$1" util="$2" resets_at="$3"
     [ -z "$util" ] && return
@@ -62,19 +62,19 @@ fi
 
 BAR_COLOR="$GREEN"
 
-# 프로그레스 바 (10칸)
+# Context window progress bar (10 segments)
 FILLED=$((PCT / 10)); EMPTY=$((10 - FILLED))
 BAR="[$(printf "%${FILLED}s" | tr ' ' '=')$(printf "%${EMPTY}s" | tr ' ' '-')]"
 
 COST_FMT=$(printf '$%.2f' "$COST")
 
-# git 브랜치
+# Git branch (silently skipped if not in a git repo)
 BRANCH=""
 git rev-parse --git-dir > /dev/null 2>&1 && BRANCH=" | $(git branch --show-current 2>/dev/null)"
 
-# 1줄: 버전, 모델, 디렉토리|브랜치, 모드
+# Line 1: version, model, directory|branch, mode
 printf '%b\n' "📋 v${VERSION}  ${PURPLE}🤖 ${MODEL}${RESET}  ${CYAN}📁 ${DIR##*/}${BRANCH}${RESET}  ⚙️ ${MODE}"
-# 2줄: 컨텍스트 바
+# Line 2: context window usage bar
 printf '%b\n' "${GREEN}🧠 Context Used: ${PCT}%${RESET} ${BAR_COLOR}${BAR}${RESET}"
-# 3줄: 비용 + usage 퍼센트
+# Line 3: session cost + plan utilization
 printf '%b\n' "${YELLOW}💰 ${COST_FMT}${RESET}${USAGE_STR}"
