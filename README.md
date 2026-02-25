@@ -61,18 +61,15 @@ sudo pacman -S jq
 
 ### Option 1: curl (no git required)
 
-Downloads only the script file — simplest option.
+Downloads and runs the installer directly — no cloning needed. Automatically installs the script and updates `settings.json`.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sunwxxpi/Claude-Code-Core-Statusline/main/statusline-command.sh \
-  -o ~/.claude/statusline-command.sh && chmod +x ~/.claude/statusline-command.sh
+curl -fsSL https://raw.githubusercontent.com/sunwxxpi/Claude-Code-Core-Statusline/main/install.sh | bash
 ```
 
-Then add the `statusLine` block to `~/.claude/settings.json` manually (see [Manual Install](#manual-install) step 2).
+### Option 2: git clone
 
-### Option 2: git clone (includes install.sh)
-
-Clones the full repo and runs the automated installer, which also updates `settings.json`.
+Clones the full repo and runs the installer locally. Behavior is identical to Option 1.
 
 ```bash
 git clone https://github.com/sunwxxpi/Claude-Code-Core-Statusline.git

@@ -23,8 +23,8 @@ check_deps() {
 }
 
 # ─── Main install ───────────────────────────────────────────────────────────
+REPO_RAW="https://raw.githubusercontent.com/sunwxxpi/Claude-Code-Core-Statusline/main"
 CLAUDE_DIR="$HOME/.claude"
-SCRIPT_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/statusline-command.sh"
 SCRIPT_DST="$CLAUDE_DIR/statusline-command.sh"
 SETTINGS="$CLAUDE_DIR/settings.json"
 
@@ -35,8 +35,18 @@ success "jq and curl found."
 info "Setting up ~/.claude directory..."
 mkdir -p "$CLAUDE_DIR"
 
-info "Copying statusline-command.sh → $SCRIPT_DST"
-cp "$SCRIPT_SRC" "$SCRIPT_DST"
+# Detect whether a local copy of statusline-command.sh exists beside this script.
+# When run via `curl ... | bash`, BASH_SOURCE[0] is empty or "bash", so we download instead.
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" 2>/dev/null && pwd || echo "")"
+_SCRIPT_SRC="$_SCRIPT_DIR/statusline-command.sh"
+
+if [ -f "$_SCRIPT_SRC" ]; then
+    info "Copying statusline-command.sh → $SCRIPT_DST"
+    cp "$_SCRIPT_SRC" "$SCRIPT_DST"
+else
+    info "Downloading statusline-command.sh from GitHub..."
+    curl -fsSL "$REPO_RAW/statusline-command.sh" -o "$SCRIPT_DST"
+fi
 chmod +x "$SCRIPT_DST"
 success "Script installed."
 
