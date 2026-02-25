@@ -1,0 +1,140 @@
+# Claude-Code-Core-Statusline
+
+A rich, informative status line for [Claude Code](https://claude.ai/code) that shows model info, context usage, session cost, and your Anthropic plan utilization — all in 3 compact lines.
+
+```
+📋 v1.0.0  🤖 claude-sonnet-4-6  📁 my-project | main  ⚙️ default
+🧠 Context Used: 34% [===-------]
+💰 $0.12  | 5h 34% [===-------] (4h22m) | 7d 9% [----------] (6d12h)
+```
+
+---
+
+## Features
+
+| Field | Description |
+|-------|-------------|
+| `📋 v...` | Claude Code version |
+| `🤖 model` | Active model name |
+| `📁 dir \| branch` | Current directory and git branch (if in a repo) |
+| `⚙️ mode` | Output style (default / auto, etc.) |
+| `🧠 Context Used` | Context window usage % with progress bar |
+| `💰 $x.xx` | Cumulative session cost |
+| `5h xx%` | 5-hour rolling usage against your Anthropic plan limit |
+| `7d xx%` | 7-day rolling usage against your Anthropic plan limit |
+
+> **Note:** The `5h` / `7d` usage fields require a Claude.ai OAuth login (Claude Code's built-in login). They will be silently skipped if you use an API key instead.
+
+---
+
+## Prerequisites
+
+| Tool | Required | Notes |
+|------|----------|-------|
+| `bash` | Yes | Version 4+ recommended |
+| `jq` | Yes | JSON parsing |
+| `curl` | Yes | Fetching Anthropic usage |
+| `git` | No | Only needed for branch display |
+
+Install missing tools:
+
+```bash
+# macOS
+brew install jq
+
+# Ubuntu / Debian
+sudo apt install jq curl
+
+# Arch Linux
+sudo pacman -S jq curl
+```
+
+---
+
+## Quick Install
+
+```bash
+git clone https://github.com/YOUR_USERNAME/Claude-Code-Core-Statusline.git
+cd Claude-Code-Core-Statusline
+bash install.sh
+```
+
+Then **restart Claude Code**.
+
+---
+
+## Manual Install
+
+### 1. Copy the script
+
+```bash
+cp statusline-command.sh ~/.claude/statusline-command.sh
+chmod +x ~/.claude/statusline-command.sh
+```
+
+### 2. Edit `~/.claude/settings.json`
+
+Add the `statusLine` block. If the file doesn't exist yet, create it:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/YOUR_USERNAME/.claude/statusline-command.sh"
+  }
+}
+```
+
+> Replace `/home/YOUR_USERNAME` with your actual home directory path (`echo $HOME`).
+
+If you already have a `settings.json`, add only the `statusLine` key:
+
+```json
+{
+  "permissions": { "defaultMode": "default" },
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/YOUR_USERNAME/.claude/statusline-command.sh"
+  }
+}
+```
+
+### 3. Restart Claude Code
+
+The statusline will appear at the bottom of each turn.
+
+---
+
+## How It Works
+
+Each time Claude finishes a turn, Claude Code pipes a JSON payload to the command defined in `statusLine.command`. The script:
+
+1. Parses model, version, directory, cost, and context usage from the payload.
+2. Reads your OAuth access token from `~/.claude/.credentials.json` and calls `https://api.anthropic.com/api/oauth/usage` to fetch plan utilization.
+3. Caches the usage response to `~/.claude/usage_pct_cache.json`.
+4. Prints 3 formatted lines to stdout, which Claude Code renders below the response.
+
+---
+
+## Troubleshooting
+
+**Statusline not showing**
+- Make sure the `command` path in `settings.json` uses your actual home directory.
+- Check that `statusline-command.sh` is executable: `ls -l ~/.claude/statusline-command.sh`
+- Run the script manually to test: `echo '{}' | bash ~/.claude/statusline-command.sh`
+
+**`5h` / `7d` usage not showing**
+- This requires logging in via `claude login` (OAuth flow), not an API key.
+- Check that `~/.claude/.credentials.json` contains a `claudeAiOauth.accessToken` field.
+
+**`jq: command not found`**
+- Install `jq` (see Prerequisites above).
+
+**Usage API returns errors**
+- The `anthropic-beta: oauth-2025-04-20` header is a beta API and may change. Check this repository for updates.
+
+---
+
+## License
+
+MIT
