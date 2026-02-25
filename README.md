@@ -31,22 +31,22 @@ A rich, informative status line for [Claude Code](https://claude.ai/code) that s
 
 | Tool | Required | Notes |
 |------|----------|-------|
-| `bash` | Yes | Version 4+ recommended |
-| `jq` | Yes | JSON parsing |
-| `curl` | Yes | Fetching Anthropic usage |
-| `git` | No | Only needed for branch display |
+| `bash` | Yes | Pre-installed on Linux and macOS |
+| `jq` | Yes | **Must be installed manually** — not bundled by default |
+| `curl` | For usage stats only | Pre-installed on most systems; only needed for `5h`/`7d` fields |
+| `git` | No | Pre-installed on most dev environments; only needed for branch display |
 
-Install missing tools:
+In most cases, **only `jq` needs to be installed**:
 
 ```bash
 # macOS
 brew install jq
 
 # Ubuntu / Debian
-sudo apt install jq curl
+sudo apt install jq
 
 # Arch Linux
-sudo pacman -S jq curl
+sudo pacman -S jq
 ```
 
 ---
