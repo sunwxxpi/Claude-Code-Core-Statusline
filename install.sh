@@ -10,15 +10,15 @@ error()   { printf "${RED}[ERROR]${RESET} %s\n" "$*" >&2; exit 1; }
 
 # ─── Dependency check ───────────────────────────────────────────────────────
 check_deps() {
-    local missing=()
-    command -v jq   &>/dev/null || missing+=("jq")
-    command -v curl &>/dev/null || missing+=("curl")
-    if [ ${#missing[@]} -gt 0 ]; then
-        error "Missing required dependencies: ${missing[*]}
-  Install them first:
-    macOS:  brew install ${missing[*]}
-    Ubuntu: sudo apt install ${missing[*]}
-    Arch:   sudo pacman -S ${missing[*]}"
+    command -v jq &>/dev/null || error "Missing required dependency: jq
+  Install it first:
+    macOS:  brew install jq
+    Ubuntu: sudo apt install jq
+    Arch:   sudo pacman -S jq"
+
+    if ! command -v curl &>/dev/null; then
+        warn "curl not found — the 5h/7d usage stats will not be available."
+        warn "Install curl to enable plan utilization tracking."
     fi
 }
 
@@ -30,7 +30,7 @@ SETTINGS="$CLAUDE_DIR/settings.json"
 
 info "Checking dependencies..."
 check_deps
-success "jq and curl found."
+success "Dependency check passed."
 
 info "Setting up ~/.claude directory..."
 mkdir -p "$CLAUDE_DIR"
@@ -44,6 +44,8 @@ if [ -f "$_SCRIPT_SRC" ]; then
     info "Copying statusline-command.sh → $SCRIPT_DST"
     cp "$_SCRIPT_SRC" "$SCRIPT_DST"
 else
+    command -v curl &>/dev/null || error "curl is required to download statusline-command.sh.
+  Install curl or use 'git clone' install method instead."
     info "Downloading statusline-command.sh from GitHub..."
     curl -fsSL "$REPO_RAW/statusline-command.sh" -o "$SCRIPT_DST"
 fi

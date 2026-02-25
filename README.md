@@ -1,6 +1,6 @@
 # Claude-Code-Core-Statusline
 
-A rich, informative status line for [Claude Code](https://claude.ai/code) that shows model info, context usage, session cost, and your Anthropic plan utilization — all in 3 compact lines.
+A rich, informative status line for [Claude Code](https://code.claude.com/docs/en/overview) that shows model info, context usage, session cost, and your Anthropic plan utilization — all in 3 compact lines.
 
 ```
 📋 v1.0.0  🤖 claude-sonnet-4-6  📁 my-project | main  ⚙️ default
@@ -33,7 +33,7 @@ A rich, informative status line for [Claude Code](https://claude.ai/code) that s
 |------|----------|-------|
 | `bash` | Yes | Pre-installed on Linux and macOS |
 | `jq` | Yes | Usually needs manual install — may already be present (e.g. bundled with Anaconda) |
-| `curl` | For usage stats only | Pre-installed on most systems; only needed for `5h`/`7d` fields |
+| `curl` | For install Option 1 and usage stats | Pre-installed on most systems; required for `curl \| bash` install and `5h`/`7d` fields |
 | `git` | No | Pre-installed on most dev environments; only needed for branch display |
 
 Check if `jq` is already available first:
@@ -61,7 +61,7 @@ sudo pacman -S jq
 
 ### Option 1: curl (no git required)
 
-Downloads and runs the installer directly — no cloning needed. Automatically installs the script and updates `settings.json`.
+Downloads and runs the installer directly — no cloning needed. Requires `curl`. Automatically installs the script and updates `settings.json`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sunwxxpi/Claude-Code-Core-Statusline/main/install.sh | bash
@@ -69,7 +69,7 @@ curl -fsSL https://raw.githubusercontent.com/sunwxxpi/Claude-Code-Core-Statuslin
 
 ### Option 2: git clone
 
-Clones the full repo and runs the installer locally. Behavior is identical to Option 1.
+Clones the full repo and runs the installer locally. Does not require `curl` for installation.
 
 ```bash
 git clone https://github.com/sunwxxpi/Claude-Code-Core-Statusline.git
