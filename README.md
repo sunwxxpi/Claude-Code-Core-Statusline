@@ -86,6 +86,7 @@ Add the `statusLine` block. If the file doesn't exist yet, create it:
 ```
 
 > Replace `/home/YOUR_USERNAME` with your actual home directory path (`echo $HOME`).
+> On macOS, this is typically `/Users/YOUR_USERNAME`.
 
 If you already have a `settings.json`, add only the `statusLine` key:
 
@@ -101,18 +102,18 @@ If you already have a `settings.json`, add only the `statusLine` key:
 
 ### 3. Restart Claude Code
 
-The statusline will appear at the bottom of each turn.
+The statusline stays visible throughout your session and refreshes after each response.
 
 ---
 
 ## How It Works
 
-Each time Claude finishes a turn, Claude Code pipes a JSON payload to the command defined in `statusLine.command`. The script:
+After each response, Claude Code pipes a JSON payload to the command defined in `statusLine.command` and refreshes the statusline with the output. The script:
 
 1. Parses model, version, directory, cost, and context usage from the payload.
 2. Reads your OAuth access token from `~/.claude/.credentials.json` and calls `https://api.anthropic.com/api/oauth/usage` to fetch plan utilization.
 3. Caches the usage response to `~/.claude/usage_pct_cache.json`.
-4. Prints 3 formatted lines to stdout, which Claude Code renders below the response.
+4. Prints 3 formatted lines to stdout, which Claude Code uses to refresh the persistent statusline display.
 
 ---
 
