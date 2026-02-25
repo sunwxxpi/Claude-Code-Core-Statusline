@@ -2,11 +2,7 @@
 
 A rich, informative status line for [Claude Code](https://code.claude.com/docs/en/overview) that shows model info, context usage, session cost, and your Anthropic plan utilization — all in 3 compact lines.
 
-```
-📋 v1.0.0  🤖 claude-sonnet-4-6  📁 my-project | main  ⚙️ default
-🧠 Context Used: 34% [===-------]
-💰 $0.12  | 5h 34% [===-------] (4h22m) | 7d 9% [----------] (6d12h)
-```
+![Statusline Preview](assets/preview.png)
 
 ---
 
