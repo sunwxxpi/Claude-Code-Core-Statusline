@@ -12,12 +12,12 @@ A rich, informative status line for [Claude Code](https://code.claude.com/docs/e
 
 | Field | Description |
 |-------|-------------|
-| `📋 v...` | Claude Code version |
-| `🤖 model` | Active model name |
-| `📁 dir \| branch` | Current directory and git branch (if in a repo) |
-| `⚙️ mode` | Output style (default / auto, etc.) |
-| `🧠 Context Used` | Context window usage % with progress bar and token count (e.g. `32k / 200k`) |
-| `💰 $x.xx` | Cumulative session cost |
+| `v...` | Claude Code version |
+| `model` | Active model name, with effort level appended when set (e.g. `Opus 4.7 high`) |
+| `dir (branch)` | Current directory and git branch — branch is silently skipped outside a repo or on a detached HEAD |
+| `mode` | Output style (default / auto, etc.) |
+| `Context` | Context window usage % with progress bar and token count (e.g. `32k / 200k`) |
+| `$x.xx` | Cumulative session cost |
 | `5h xx%` | 5-hour rolling usage against your Anthropic plan limit |
 | `7d xx%` | 7-day rolling usage against your Anthropic plan limit |
 

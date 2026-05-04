@@ -1,17 +1,19 @@
 #!/bin/bash
 input=$(cat)
 
-MODEL=$(echo "$input" | jq -r '.model.display_name')
 VERSION=$(echo "$input" | jq -r '.version // "?"')
-MODE=$(echo "$input" | jq -r '.output_style.name // "default"')
+MODEL=$(echo "$input" | jq -r '.model.display_name')
+EFFORT=$(echo "$input" | jq -r '.effort.level // empty')
+[ -n "$EFFORT" ] && MODEL="${MODEL} ${EFFORT}"
 DIR=$(echo "$input" | jq -r '.workspace.current_dir')
-COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
+MODE=$(echo "$input" | jq -r '.output_style.name // "default"')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 CTX_MAX=$(echo "$input" | jq -r '.context_window.context_window_size // 0')
 CTX_INPUT=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
 CTX_CACHE_CREATE=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0')
 CTX_CACHE_READ=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
 CTX_USED=$(( CTX_INPUT + CTX_CACHE_CREATE + CTX_CACHE_READ ))
+COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 
 # Format token count as human-readable (e.g. 12345 -> "12k", 200000 -> "200k")
 _fmt_tokens() {
@@ -82,15 +84,16 @@ BAR="[$(printf "%${FILLED}s" | tr ' ' '=')$(printf "%${EMPTY}s" | tr ' ' '-')]"
 
 COST_FMT=$(printf '$%.2f' "$COST")
 
-# Git branch (silently skipped if not in a git repo)
+# Git branch (silently skipped if not in a git repo or detached HEAD)
 BRANCH=""
-git rev-parse --git-dir > /dev/null 2>&1 && BRANCH=" | $(git branch --show-current 2>/dev/null)"
+_BR=$(git branch --show-current 2>/dev/null)
+[ -n "$_BR" ] && BRANCH=" ($_BR)"
 
 # Line 1: version, model, directory|branch, mode
-printf '%b\n' "📋 v${VERSION}  ${PURPLE}🤖 ${MODEL}${RESET}  ${CYAN}📁 ${DIR##*/}${BRANCH}${RESET}  ⚙️ ${MODE}"
+printf '%b\n' "v${VERSION} | ${PURPLE}${MODEL}${RESET} | ${CYAN}${DIR##*/}${BRANCH}${RESET} | ${MODE}"
 # Line 2: context window usage bar
 CTX_USED_FMT=$(_fmt_tokens "$CTX_USED")
 CTX_MAX_FMT=$(_fmt_tokens "$CTX_MAX")
-printf '%b\n' "${GREEN}🧠 Context Used: ${PCT}% ${BAR} (${CTX_USED_FMT} / ${CTX_MAX_FMT})${RESET}"
+printf '%b\n' "${GREEN}Context: ${PCT}% ${BAR} (${CTX_USED_FMT} / ${CTX_MAX_FMT})${RESET}"
 # Line 3: session cost + plan utilization
-printf '%b\n' "${YELLOW}💰 ${COST_FMT}${RESET}${USAGE_STR}"
+printf '%b\n' "${YELLOW}${COST_FMT}${RESET}${USAGE_STR}"
