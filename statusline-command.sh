@@ -2,7 +2,7 @@
 input=$(cat)
 
 VERSION=$(echo "$input" | jq -r '.version // "?"')
-MODEL=$(echo "$input" | jq -r '.model.display_name')
+MODEL=$(echo "$input" | jq -r '.model.display_name' | sed 's/ (1M context)//')
 EFFORT=$(echo "$input" | jq -r '.effort.level // empty')
 [ -n "$EFFORT" ] && MODEL="${MODEL} ${EFFORT}"
 DIR=$(echo "$input" | jq -r '.workspace.current_dir')
